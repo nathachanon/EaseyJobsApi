@@ -16,7 +16,8 @@ namespace EasyJobsApi.Controllers
 {
     public class MemberController : ApiController
     {
-        private EasyJobsEntities1 db = new EasyJobsEntities1();
+        private EasyJobsEntities1 db_local = new EasyJobsEntities1();
+        private EasyJobsEntities2 db = new EasyJobsEntities2();
 
         [Route("api/allMember")]
         [HttpGet]

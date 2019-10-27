@@ -12,7 +12,8 @@ namespace EasyJobsApi.Controllers
 {
     public class WorkController : ApiController
     {
-        private EasyJobsEntities1 db = new EasyJobsEntities1();
+        private EasyJobsEntities1 db_local = new EasyJobsEntities1();
+        private EasyJobsEntities2 db = new EasyJobsEntities2();
 
         [Route("api/Work/AddWork")]
         [HttpPost]
@@ -58,6 +59,24 @@ namespace EasyJobsApi.Controllers
             db.Work.Add(addwork);
             db.SaveChangesAsync();
             return Ok(addwork);
+        }
+
+        [Route("api/allWork")]
+        [HttpGet]
+        public IQueryable<object> GetAllWork()
+        {
+            var work = db.Work.Select(s => new WorkDto
+            {
+                work_id = s.work_id,
+                work_name = s.work_name,
+                work_desc = s.work_desc,
+                labor_cost = s.labor_cost,
+                duration = s.duration,
+                member_id = s.member_id,
+                location_id = s.location_id,
+                status_id = s.status_id
+            });
+            return work;
         }
     }
 }
