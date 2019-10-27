@@ -1,0 +1,384 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="EasyJobsModel1.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Getjob">
+          <Key>
+            <PropertyRef Name="get_id" />
+          </Key>
+          <Property Name="get_id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="member_id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="work_id" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Location">
+          <Key>
+            <PropertyRef Name="location_id" />
+          </Key>
+          <Property Name="location_id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="lat" Type="float" Nullable="false" />
+          <Property Name="long" Type="float" Nullable="false" />
+          <Property Name="loc_name" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Member">
+          <Key>
+            <PropertyRef Name="member_id" />
+          </Key>
+          <Property Name="member_id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="surname" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="picture" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="tel" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="email" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="password" Type="nvarchar" MaxLength="100" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Status">
+          <Key>
+            <PropertyRef Name="status_id" />
+          </Key>
+          <Property Name="status_id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="status" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="Work">
+          <Key>
+            <PropertyRef Name="work_id" />
+          </Key>
+          <Property Name="work_id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="work_name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="work_desc" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="tel" Type="nvarchar" MaxLength="15" Nullable="false" />
+          <Property Name="labor_cost" Type="int" Nullable="false" />
+          <Property Name="duration" Type="datetime" Nullable="false" />
+          <Property Name="datetime" Type="datetime" Nullable="false" />
+          <Property Name="member_id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="location_id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="status_id" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_Getjob_member">
+          <End Role="Member" Type="Self.Member" Multiplicity="1" />
+          <End Role="Getjob" Type="Self.Getjob" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Member">
+              <PropertyRef Name="member_id" />
+            </Principal>
+            <Dependent Role="Getjob">
+              <PropertyRef Name="member_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Getjob_work">
+          <End Role="Work" Type="Self.Work" Multiplicity="1" />
+          <End Role="Getjob" Type="Self.Getjob" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Work">
+              <PropertyRef Name="work_id" />
+            </Principal>
+            <Dependent Role="Getjob">
+              <PropertyRef Name="work_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Work_location">
+          <End Role="Location" Type="Self.Location" Multiplicity="1" />
+          <End Role="Work" Type="Self.Work" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Location">
+              <PropertyRef Name="location_id" />
+            </Principal>
+            <Dependent Role="Work">
+              <PropertyRef Name="location_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Work_member">
+          <End Role="Member" Type="Self.Member" Multiplicity="1" />
+          <End Role="Work" Type="Self.Work" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Member">
+              <PropertyRef Name="member_id" />
+            </Principal>
+            <Dependent Role="Work">
+              <PropertyRef Name="member_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Work_status">
+          <End Role="Status" Type="Self.Status" Multiplicity="1" />
+          <End Role="Work" Type="Self.Work" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Status">
+              <PropertyRef Name="status_id" />
+            </Principal>
+            <Dependent Role="Work">
+              <PropertyRef Name="status_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="EasyJobsModel1StoreContainer">
+          <EntitySet Name="Getjob" EntityType="Self.Getjob" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Location" EntityType="Self.Location" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Member" EntityType="Self.Member" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Status" EntityType="Self.Status" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Work" EntityType="Self.Work" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Getjob_member" Association="Self.FK_Getjob_member">
+            <End Role="Member" EntitySet="Member" />
+            <End Role="Getjob" EntitySet="Getjob" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Getjob_work" Association="Self.FK_Getjob_work">
+            <End Role="Work" EntitySet="Work" />
+            <End Role="Getjob" EntitySet="Getjob" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Work_location" Association="Self.FK_Work_location">
+            <End Role="Location" EntitySet="Location" />
+            <End Role="Work" EntitySet="Work" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Work_member" Association="Self.FK_Work_member">
+            <End Role="Member" EntitySet="Member" />
+            <End Role="Work" EntitySet="Work" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Work_status" Association="Self.FK_Work_status">
+            <End Role="Status" EntitySet="Status" />
+            <End Role="Work" EntitySet="Work" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="EasyJobsModel1" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Getjob">
+          <Key>
+            <PropertyRef Name="get_id" />
+          </Key>
+          <Property Name="get_id" Type="Guid" Nullable="false" />
+          <Property Name="member_id" Type="Guid" Nullable="false" />
+          <Property Name="work_id" Type="Guid" Nullable="false" />
+          <NavigationProperty Name="Member" Relationship="Self.FK_Getjob_member" FromRole="Getjob" ToRole="Member" />
+          <NavigationProperty Name="Work" Relationship="Self.FK_Getjob_work" FromRole="Getjob" ToRole="Work" />
+        </EntityType>
+        <EntityType Name="Location">
+          <Key>
+            <PropertyRef Name="location_id" />
+          </Key>
+          <Property Name="location_id" Type="Guid" Nullable="false" />
+          <Property Name="lat" Type="Double" Nullable="false" />
+          <Property Name="long" Type="Double" Nullable="false" />
+          <Property Name="loc_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Work" Relationship="Self.FK_Work_location" FromRole="Location" ToRole="Work" />
+        </EntityType>
+        <EntityType Name="Member">
+          <Key>
+            <PropertyRef Name="member_id" />
+          </Key>
+          <Property Name="member_id" Type="Guid" Nullable="false" />
+          <Property Name="name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="surname" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="picture" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="tel" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="email" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="password" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Getjob" Relationship="Self.FK_Getjob_member" FromRole="Member" ToRole="Getjob" />
+          <NavigationProperty Name="Work" Relationship="Self.FK_Work_member" FromRole="Member" ToRole="Work" />
+        </EntityType>
+        <EntityType Name="Status">
+          <Key>
+            <PropertyRef Name="status_id" />
+          </Key>
+          <Property Name="status_id" Type="Guid" Nullable="false" />
+          <Property Name="status1" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Work" Relationship="Self.FK_Work_status" FromRole="Status" ToRole="Work" />
+        </EntityType>
+        <EntityType Name="Work">
+          <Key>
+            <PropertyRef Name="work_id" />
+          </Key>
+          <Property Name="work_id" Type="Guid" Nullable="false" />
+          <Property Name="work_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="work_desc" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="tel" Type="String" MaxLength="15" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="labor_cost" Type="Int32" Nullable="false" />
+          <Property Name="duration" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="datetime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="member_id" Type="Guid" Nullable="false" />
+          <Property Name="location_id" Type="Guid" Nullable="false" />
+          <Property Name="status_id" Type="Guid" Nullable="false" />
+          <NavigationProperty Name="Getjob" Relationship="Self.FK_Getjob_work" FromRole="Work" ToRole="Getjob" />
+          <NavigationProperty Name="Location" Relationship="Self.FK_Work_location" FromRole="Work" ToRole="Location" />
+          <NavigationProperty Name="Member" Relationship="Self.FK_Work_member" FromRole="Work" ToRole="Member" />
+          <NavigationProperty Name="Status" Relationship="Self.FK_Work_status" FromRole="Work" ToRole="Status" />
+        </EntityType>
+        <Association Name="FK_Getjob_member">
+          <End Role="Member" Type="Self.Member" Multiplicity="1" />
+          <End Role="Getjob" Type="Self.Getjob" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Member">
+              <PropertyRef Name="member_id" />
+            </Principal>
+            <Dependent Role="Getjob">
+              <PropertyRef Name="member_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Getjob_work">
+          <End Role="Work" Type="Self.Work" Multiplicity="1" />
+          <End Role="Getjob" Type="Self.Getjob" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Work">
+              <PropertyRef Name="work_id" />
+            </Principal>
+            <Dependent Role="Getjob">
+              <PropertyRef Name="work_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Work_location">
+          <End Role="Location" Type="Self.Location" Multiplicity="1" />
+          <End Role="Work" Type="Self.Work" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Location">
+              <PropertyRef Name="location_id" />
+            </Principal>
+            <Dependent Role="Work">
+              <PropertyRef Name="location_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Work_member">
+          <End Role="Member" Type="Self.Member" Multiplicity="1" />
+          <End Role="Work" Type="Self.Work" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Member">
+              <PropertyRef Name="member_id" />
+            </Principal>
+            <Dependent Role="Work">
+              <PropertyRef Name="member_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Work_status">
+          <End Role="Status" Type="Self.Status" Multiplicity="1" />
+          <End Role="Work" Type="Self.Work" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Status">
+              <PropertyRef Name="status_id" />
+            </Principal>
+            <Dependent Role="Work">
+              <PropertyRef Name="status_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="EasyJobsEntities2" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Getjob" EntityType="Self.Getjob" />
+          <EntitySet Name="Location" EntityType="Self.Location" />
+          <EntitySet Name="Member" EntityType="Self.Member" />
+          <EntitySet Name="Status" EntityType="Self.Status" />
+          <EntitySet Name="Work" EntityType="Self.Work" />
+          <AssociationSet Name="FK_Getjob_member" Association="Self.FK_Getjob_member">
+            <End Role="Member" EntitySet="Member" />
+            <End Role="Getjob" EntitySet="Getjob" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Getjob_work" Association="Self.FK_Getjob_work">
+            <End Role="Work" EntitySet="Work" />
+            <End Role="Getjob" EntitySet="Getjob" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Work_location" Association="Self.FK_Work_location">
+            <End Role="Location" EntitySet="Location" />
+            <End Role="Work" EntitySet="Work" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Work_member" Association="Self.FK_Work_member">
+            <End Role="Member" EntitySet="Member" />
+            <End Role="Work" EntitySet="Work" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Work_status" Association="Self.FK_Work_status">
+            <End Role="Status" EntitySet="Status" />
+            <End Role="Work" EntitySet="Work" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="EasyJobsModel1StoreContainer" CdmEntityContainer="EasyJobsEntities2">
+          <EntitySetMapping Name="Getjob">
+            <EntityTypeMapping TypeName="EasyJobsModel1.Getjob">
+              <MappingFragment StoreEntitySet="Getjob">
+                <ScalarProperty Name="get_id" ColumnName="get_id" />
+                <ScalarProperty Name="member_id" ColumnName="member_id" />
+                <ScalarProperty Name="work_id" ColumnName="work_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Location">
+            <EntityTypeMapping TypeName="EasyJobsModel1.Location">
+              <MappingFragment StoreEntitySet="Location">
+                <ScalarProperty Name="location_id" ColumnName="location_id" />
+                <ScalarProperty Name="lat" ColumnName="lat" />
+                <ScalarProperty Name="long" ColumnName="long" />
+                <ScalarProperty Name="loc_name" ColumnName="loc_name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Member">
+            <EntityTypeMapping TypeName="EasyJobsModel1.Member">
+              <MappingFragment StoreEntitySet="Member">
+                <ScalarProperty Name="member_id" ColumnName="member_id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="surname" ColumnName="surname" />
+                <ScalarProperty Name="picture" ColumnName="picture" />
+                <ScalarProperty Name="tel" ColumnName="tel" />
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="password" ColumnName="password" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Status">
+            <EntityTypeMapping TypeName="EasyJobsModel1.Status">
+              <MappingFragment StoreEntitySet="Status">
+                <ScalarProperty Name="status_id" ColumnName="status_id" />
+                <ScalarProperty Name="status1" ColumnName="status" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Work">
+            <EntityTypeMapping TypeName="EasyJobsModel1.Work">
+              <MappingFragment StoreEntitySet="Work">
+                <ScalarProperty Name="work_id" ColumnName="work_id" />
+                <ScalarProperty Name="work_name" ColumnName="work_name" />
+                <ScalarProperty Name="work_desc" ColumnName="work_desc" />
+                <ScalarProperty Name="tel" ColumnName="tel" />
+                <ScalarProperty Name="labor_cost" ColumnName="labor_cost" />
+                <ScalarProperty Name="duration" ColumnName="duration" />
+                <ScalarProperty Name="datetime" ColumnName="datetime" />
+                <ScalarProperty Name="member_id" ColumnName="member_id" />
+                <ScalarProperty Name="location_id" ColumnName="location_id" />
+                <ScalarProperty Name="status_id" ColumnName="status_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
