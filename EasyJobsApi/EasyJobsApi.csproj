@@ -186,9 +186,12 @@
     <Compile Include="Controllers\MembersController.cs" />
     <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
+    <Compile Include="Controllers\WorkController.cs" />
+    <Compile Include="DTO\AddWorkDto.cs" />
     <Compile Include="DTO\LoginMemberDto.cs" />
     <Compile Include="DTO\MemberDto.cs" />
     <Compile Include="DTO\RegisterMemberDto.cs" />
+    <Compile Include="DTO\WorkDto.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -207,20 +210,35 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>EasyJobModel.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Models\EasyJobServerModel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EasyJobServerModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\EasyJobServerModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EasyJobServerModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\EasyJobServerModel.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EasyJobServerModel.edmx</DependentUpon>
+    </Compile>
     <Compile Include="Models\Getjob.cs">
-      <DependentUpon>EasyJobModel.tt</DependentUpon>
+      <DependentUpon>EasyJobServerModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Location.cs">
-      <DependentUpon>EasyJobModel.tt</DependentUpon>
+      <DependentUpon>EasyJobServerModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Member.cs">
-      <DependentUpon>EasyJobModel.tt</DependentUpon>
+      <DependentUpon>EasyJobServerModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Status.cs">
-      <DependentUpon>EasyJobModel.tt</DependentUpon>
+      <DependentUpon>EasyJobServerModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Work.cs">
-      <DependentUpon>EasyJobModel.tt</DependentUpon>
+      <DependentUpon>EasyJobServerModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -263,6 +281,14 @@
       <DependentUpon>EasyJobModel.edmx</DependentUpon>
       <LastGenOutput>EasyJobModel.cs</LastGenOutput>
     </Content>
+    <Content Include="Models\EasyJobServerModel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>EasyJobServerModel.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Models\EasyJobServerModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>EasyJobServerModel.cs</LastGenOutput>
+    </Content>
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -291,6 +317,13 @@
     </EntityDeploy>
     <Content Include="Models\EasyJobModel.edmx.diagram">
       <DependentUpon>EasyJobModel.edmx</DependentUpon>
+    </Content>
+    <EntityDeploy Include="Models\EasyJobServerModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>EasyJobServerModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Models\EasyJobServerModel.edmx.diagram">
+      <DependentUpon>EasyJobServerModel.edmx</DependentUpon>
     </Content>
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
