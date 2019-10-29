@@ -78,5 +78,38 @@ namespace EasyJobsApi.Controllers
             });
             return work;
         }
+
+        [Route("api/Work/GetJob")]
+        [HttpPost]
+        public IHttpActionResult GetJob([FromBody] GetJobDto req)
+        {
+            var member = JsonConvert.SerializeObject(req);
+            GetJobDto ADW = JsonConvert.DeserializeObject<GetJobDto>(member);
+
+            System.Guid get_id = Guid.NewGuid();
+            Getjob addmember_job = new Getjob
+            {
+                get_id = get_id,
+                member_id = ADW.member_id,
+                work_id = ADW.work_id
+            };
+            var get_status = db.Work.Where(o => o.work_id == ADW.work_id).Select(s => s.status_id).ToArray();
+            var status_update = (from x in db.Work
+                                 join y in db.Status on x.status_id equals y.status_id
+                                 where x.work_id == ADW.work_id
+                                 select new
+                                 {
+                                     my_Status = y
+                                 });
+
+            foreach(var st in status_update)
+            {
+                st.my_Status.status1 = "มีผู้รับงานแล้ว";
+            }
+
+            db.Getjob.Add(addmember_job);
+            db.SaveChangesAsync();
+            return Ok(addmember_job);
+        }
     }
 }
