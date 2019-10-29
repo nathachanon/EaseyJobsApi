@@ -7,9 +7,11 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Cors;
 
 namespace EasyJobsApi.Controllers
 {
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class WorkController : ApiController
     {
         private EasyJobsEntities1 db_local = new EasyJobsEntities1();
@@ -65,18 +67,47 @@ namespace EasyJobsApi.Controllers
         [HttpGet]
         public IQueryable<object> GetAllWork()
         {
-            var work = db.Work.Select(s => new WorkDto
-            {
-                work_id = s.work_id,
-                work_name = s.work_name,
-                work_desc = s.work_desc,
-                labor_cost = s.labor_cost,
-                duration = s.duration,
-                member_id = s.member_id,
-                location_id = s.location_id,
-                status_id = s.status_id
-            });
-            return work;
+            var query = from c in db.Work select c;
+            //var work = db.Work.Select(s => new WorkDto
+            //{
+            //    work_id = s.work_id,
+            //    work_name = s.work_name,
+            //    work_desc = s.work_desc,
+            //    labor_cost = s.labor_cost,
+            //    duration = s.duration,
+            //    member_id = s.member_id,
+            //    location_id = s.location_id,
+            //    status_id = s.status_id
+            //});
+            return query;
+        }
+
+        [Route("api/GetWorkDetail")]
+        [HttpPost]
+        public IHttpActionResult GetWorkDetail([FromBody] WorkDetail req)
+        {
+            var work = JsonConvert.SerializeObject(req);
+            WorkDetail wr = JsonConvert.DeserializeObject<WorkDetail>(work);
+
+            var query = from w in db.Work
+                        join l in db.Location on w.location_id equals l.location_id
+                        join m in db.Member on w.member_id equals m.member_id
+                        where w.work_id == wr.work_id
+                        select new
+                        {
+                             w.work_id,
+                             w.work_name,
+                             w.work_desc,
+                             w.labor_cost,
+                             w.tel,
+                             w.duration,
+                             l.loc_name,
+                             l.lat,
+                             l.@long,
+                             m.name
+                        };
+         
+            return Ok(query);
         }
 
         [Route("api/Work/GetJob")]
