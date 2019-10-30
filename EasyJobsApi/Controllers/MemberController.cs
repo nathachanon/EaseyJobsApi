@@ -58,23 +58,80 @@ namespace EasyJobsApi.Controllers
 
         [Route("api/Member/Register")]
         [HttpPost]
-        public IHttpActionResult Register([FromBody] RegisterMemberDto req)
+        public IHttpActionResult Register()
         {
-            var member = JsonConvert.SerializeObject(req);
-            RegisterMemberDto M = JsonConvert.DeserializeObject<RegisterMemberDto>(member);
-            Member register = new Member
+            if (System.Web.HttpContext.Current.Request.Files.AllKeys.Any())
             {
-                member_id = Guid.NewGuid(),
-                name = M.name,
-                surname = M.surname,
-                picture = M.picture,
-                tel = M.tel,
-                email = M.email,
-                password = Crypto.HashPassword(M.password)
-        };
-            db.Member.Add(register);
-            db.SaveChangesAsync();
-            return Ok(register); 
+                // Get the uploaded image from the Files collection  
+                var httpPostedFile = System.Web.HttpContext.Current.Request.Files["UploadedImage"];
+                var post_name = System.Web.HttpContext.Current.Request.Form["name"];
+                var post_surname = System.Web.HttpContext.Current.Request.Form["surname"];
+                var post_tel = System.Web.HttpContext.Current.Request.Form["tel"];
+                var post_email = System.Web.HttpContext.Current.Request.Form["email"];
+                var post_password = System.Web.HttpContext.Current.Request.Form["password"];
+
+                if(post_name == null)
+                {
+                    return Content((HttpStatusCode)422, "name is null");
+                }
+
+                if (post_surname == null)
+                {
+                    return Content((HttpStatusCode)422, "surname is null");
+                }
+
+                if (post_tel == null)
+                {
+                    return Content((HttpStatusCode)422, "tel is null");
+                }
+
+                if (post_email == null)
+                {
+                    return Content((HttpStatusCode)422, "email is null");
+                }
+
+                if (post_password == null)
+                {
+                    return Content((HttpStatusCode)422, "password is null");
+                }
+
+                if (httpPostedFile != null)
+                {
+                    var get_count_member = db.Member.Where(o => o.email == post_email).Count();
+                    if(get_count_member > 0)
+                    {
+                        return Content((HttpStatusCode)422, "Email ถูกใช้งานแล้ว");
+                    }
+                    else
+                    {
+                        DTO.FileUpload imgupload = new DTO.FileUpload();
+                        int length = httpPostedFile.ContentLength;
+                        imgupload.imagedata = new byte[length]; //get imagedata  
+                        httpPostedFile.InputStream.Read(imgupload.imagedata, 0, length);
+                        imgupload.imagename = Path.GetFileName(httpPostedFile.FileName);
+                        var file_name = GenerateNewFileName() + Path.GetExtension(httpPostedFile.FileName);
+                        var fileSavePath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/Member_image"), file_name);
+                        // Save the uploaded file to "UploadedFiles" folder  
+                        httpPostedFile.SaveAs(fileSavePath);
+
+                        Member register = new Member
+                        {
+                            member_id = Guid.NewGuid(),
+                            name = post_name,
+                            surname = post_surname,
+                            picture = file_name,
+                            tel = post_tel,
+                            email = post_email,
+                            password = Crypto.HashPassword(post_password)
+                        };
+                        db.Member.Add(register);
+                        db.SaveChangesAsync();
+                        return Ok(register);
+                    }
+                }
+            }
+
+            return Content((HttpStatusCode)422, "Image is null");
         }
 
         [Route("api/Member/Login")]
