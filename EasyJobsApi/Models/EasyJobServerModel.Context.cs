@@ -30,5 +30,6 @@ namespace EasyJobsApi.Models
         public virtual DbSet<Member> Member { get; set; }
         public virtual DbSet<Status> Status { get; set; }
         public virtual DbSet<Work> Work { get; set; }
+        public virtual DbSet<Log> Log { get; set; }
     }
 }

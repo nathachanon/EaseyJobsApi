@@ -1,16 +1,21 @@
 ﻿using EasyJobsApi.DTO;
 using EasyJobsApi.Models;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Helpers;
 using System.Web.Http;
 using System.Web.Http.Description;
+using System.Web.UI.WebControls;
 
 namespace EasyJobsApi.Controllers
 {
@@ -89,6 +94,36 @@ namespace EasyJobsApi.Controllers
                  return StatusCode(HttpStatusCode.NoContent);
             }
            
+        }
+
+        [Route("api/Member/Upload")]
+        [HttpPost]
+        public async Task<IHttpActionResult> Upload()
+        {
+            if (System.Web.HttpContext.Current.Request.Files.AllKeys.Any())
+            {
+                // Get the uploaded image from the Files collection  
+                var httpPostedFile = System.Web.HttpContext.Current.Request.Files["UploadedImage"];
+                if (httpPostedFile != null)
+                {
+                    DTO.FileUpload imgupload = new DTO.FileUpload();
+                    int length = httpPostedFile.ContentLength;
+                    imgupload.imagedata = new byte[length]; //get imagedata  
+                    httpPostedFile.InputStream.Read(imgupload.imagedata, 0, length);
+                    imgupload.imagename = Path.GetFileName(httpPostedFile.FileName);
+                    var file_name = GenerateNewFileName() + Path.GetExtension(httpPostedFile.FileName);
+                    var fileSavePath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/Member_image"), file_name);
+                    // Save the uploaded file to "UploadedFiles" folder  
+                    httpPostedFile.SaveAs(fileSavePath);
+                    return Ok("Upload Success : " + file_name);
+                }
+            }
+            return Ok("Image is not Uploaded");
+        }
+
+        private string GenerateNewFileName(string prefix = "IMG")
+        {
+            return prefix + "_" + DateTime.UtcNow.ToString("yyyy-MMM-dd_HH-mm-ss");
         }
     }
 }

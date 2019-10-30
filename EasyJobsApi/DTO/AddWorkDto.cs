@@ -12,7 +12,7 @@ namespace EasyJobsApi.DTO
         public string work_desc { get; set; }
         public string tel { get; set; }
         public int labor_cost { get; set; }
-        public DateTime duration { get; set; }
+        public string duration { get; set; }
         public DateTime datetime { get; set; }
         public float lat { get; set; }
         public float @long { get; set; }
