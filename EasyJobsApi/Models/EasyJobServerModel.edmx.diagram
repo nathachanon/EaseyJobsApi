@@ -15,6 +15,9 @@
         <AssociationConnector Association="EasyJobsModel1.FK_Work_location" ManuallyRouted="false" />
         <AssociationConnector Association="EasyJobsModel1.FK_Work_member" ManuallyRouted="false" />
         <AssociationConnector Association="EasyJobsModel1.FK_Work_status" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="EasyJobsModel1.Log" Width="1.5" PointX="9.375" PointY="1.875" />
+        <AssociationConnector Association="EasyJobsModel1.FK_Log_member" />
+        <AssociationConnector Association="EasyJobsModel1.FK_Log_work" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
