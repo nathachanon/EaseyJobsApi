@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="EasyJobsModel1.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="EasyJobsModel1.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Getjob">
           <Key>
             <PropertyRef Name="get_id" />
@@ -21,6 +21,16 @@
           <Property Name="lat" Type="float" Nullable="false" />
           <Property Name="long" Type="float" Nullable="false" />
           <Property Name="loc_name" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Log">
+          <Key>
+            <PropertyRef Name="log_id" />
+          </Key>
+          <Property Name="log_id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="log_detail" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="datetime" Type="datetime" Nullable="false" />
+          <Property Name="work_id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="member_id" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
         <EntityType Name="Member">
           <Key>
@@ -50,7 +60,7 @@
           <Property Name="work_desc" Type="nvarchar" MaxLength="200" Nullable="false" />
           <Property Name="tel" Type="nvarchar" MaxLength="15" Nullable="false" />
           <Property Name="labor_cost" Type="int" Nullable="false" />
-          <Property Name="duration" Type="datetime" Nullable="false" />
+          <Property Name="duration" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="datetime" Type="datetime" Nullable="false" />
           <Property Name="member_id" Type="uniqueidentifier" Nullable="false" />
           <Property Name="location_id" Type="uniqueidentifier" Nullable="false" />
@@ -76,6 +86,30 @@
               <PropertyRef Name="work_id" />
             </Principal>
             <Dependent Role="Getjob">
+              <PropertyRef Name="work_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Log_member">
+          <End Role="Member" Type="Self.Member" Multiplicity="1" />
+          <End Role="Log" Type="Self.Log" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Member">
+              <PropertyRef Name="member_id" />
+            </Principal>
+            <Dependent Role="Log">
+              <PropertyRef Name="member_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Log_work">
+          <End Role="Work" Type="Self.Work" Multiplicity="1" />
+          <End Role="Log" Type="Self.Log" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Work">
+              <PropertyRef Name="work_id" />
+            </Principal>
+            <Dependent Role="Log">
               <PropertyRef Name="work_id" />
             </Dependent>
           </ReferentialConstraint>
@@ -119,6 +153,7 @@
         <EntityContainer Name="EasyJobsModel1StoreContainer">
           <EntitySet Name="Getjob" EntityType="Self.Getjob" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Location" EntityType="Self.Location" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Log" EntityType="Self.Log" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Member" EntityType="Self.Member" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Status" EntityType="Self.Status" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Work" EntityType="Self.Work" Schema="dbo" store:Type="Tables" />
@@ -129,6 +164,14 @@
           <AssociationSet Name="FK_Getjob_work" Association="Self.FK_Getjob_work">
             <End Role="Work" EntitySet="Work" />
             <End Role="Getjob" EntitySet="Getjob" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Log_member" Association="Self.FK_Log_member">
+            <End Role="Member" EntitySet="Member" />
+            <End Role="Log" EntitySet="Log" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Log_work" Association="Self.FK_Log_work">
+            <End Role="Work" EntitySet="Work" />
+            <End Role="Log" EntitySet="Log" />
           </AssociationSet>
           <AssociationSet Name="FK_Work_location" Association="Self.FK_Work_location">
             <End Role="Location" EntitySet="Location" />
@@ -143,8 +186,7 @@
             <End Role="Work" EntitySet="Work" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="EasyJobsModel1" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -181,6 +223,7 @@
           <Property Name="password" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="Getjob" Relationship="Self.FK_Getjob_member" FromRole="Member" ToRole="Getjob" />
           <NavigationProperty Name="Work" Relationship="Self.FK_Work_member" FromRole="Member" ToRole="Work" />
+          <NavigationProperty Name="Log" Relationship="EasyJobsModel1.FK_Log_member" FromRole="Member" ToRole="Log" />
         </EntityType>
         <EntityType Name="Status">
           <Key>
@@ -199,7 +242,7 @@
           <Property Name="work_desc" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="tel" Type="String" MaxLength="15" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="labor_cost" Type="Int32" Nullable="false" />
-          <Property Name="duration" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="duration" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
           <Property Name="datetime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="member_id" Type="Guid" Nullable="false" />
           <Property Name="location_id" Type="Guid" Nullable="false" />
@@ -208,6 +251,7 @@
           <NavigationProperty Name="Location" Relationship="Self.FK_Work_location" FromRole="Work" ToRole="Location" />
           <NavigationProperty Name="Member" Relationship="Self.FK_Work_member" FromRole="Work" ToRole="Member" />
           <NavigationProperty Name="Status" Relationship="Self.FK_Work_status" FromRole="Work" ToRole="Status" />
+          <NavigationProperty Name="Log" Relationship="EasyJobsModel1.FK_Log_work" FromRole="Work" ToRole="Log" />
         </EntityType>
         <Association Name="FK_Getjob_member">
           <End Role="Member" Type="Self.Member" Multiplicity="1" />
@@ -295,7 +339,52 @@
             <End Role="Status" EntitySet="Status" />
             <End Role="Work" EntitySet="Work" />
           </AssociationSet>
+          <EntitySet Name="Log" EntityType="EasyJobsModel1.Log" />
+          <AssociationSet Name="FK_Log_member" Association="EasyJobsModel1.FK_Log_member">
+            <End Role="Member" EntitySet="Member" />
+            <End Role="Log" EntitySet="Log" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Log_work" Association="EasyJobsModel1.FK_Log_work">
+            <End Role="Work" EntitySet="Work" />
+            <End Role="Log" EntitySet="Log" />
+          </AssociationSet>
         </EntityContainer>
+        <EntityType Name="Log">
+          <Key>
+            <PropertyRef Name="log_id" />
+          </Key>
+          <Property Name="log_id" Type="Guid" Nullable="false" />
+          <Property Name="log_detail" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="datetime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="work_id" Type="Guid" Nullable="false" />
+          <Property Name="member_id" Type="Guid" Nullable="false" />
+          <NavigationProperty Name="Member" Relationship="EasyJobsModel1.FK_Log_member" FromRole="Log" ToRole="Member" />
+          <NavigationProperty Name="Work" Relationship="EasyJobsModel1.FK_Log_work" FromRole="Log" ToRole="Work" />
+        </EntityType>
+        <Association Name="FK_Log_member">
+          <End Type="EasyJobsModel1.Member" Role="Member" Multiplicity="1" />
+          <End Type="EasyJobsModel1.Log" Role="Log" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Member">
+              <PropertyRef Name="member_id" />
+            </Principal>
+            <Dependent Role="Log">
+              <PropertyRef Name="member_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Log_work">
+          <End Type="EasyJobsModel1.Work" Role="Work" Multiplicity="1" />
+          <End Type="EasyJobsModel1.Log" Role="Log" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Work">
+              <PropertyRef Name="work_id" />
+            </Principal>
+            <Dependent Role="Log">
+              <PropertyRef Name="work_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -355,6 +444,17 @@
                 <ScalarProperty Name="member_id" ColumnName="member_id" />
                 <ScalarProperty Name="location_id" ColumnName="location_id" />
                 <ScalarProperty Name="status_id" ColumnName="status_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Log">
+            <EntityTypeMapping TypeName="EasyJobsModel1.Log">
+              <MappingFragment StoreEntitySet="Log">
+                <ScalarProperty Name="member_id" ColumnName="member_id" />
+                <ScalarProperty Name="work_id" ColumnName="work_id" />
+                <ScalarProperty Name="datetime" ColumnName="datetime" />
+                <ScalarProperty Name="log_detail" ColumnName="log_detail" />
+                <ScalarProperty Name="log_id" ColumnName="log_id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

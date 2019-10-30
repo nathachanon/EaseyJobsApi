@@ -18,6 +18,7 @@ namespace EasyJobsApi.Models
         public Work()
         {
             this.Getjob = new HashSet<Getjob>();
+            this.Log = new HashSet<Log>();
         }
     
         public System.Guid work_id { get; set; }
@@ -25,7 +26,7 @@ namespace EasyJobsApi.Models
         public string work_desc { get; set; }
         public string tel { get; set; }
         public int labor_cost { get; set; }
-        public System.DateTime duration { get; set; }
+        public string duration { get; set; }
         public System.DateTime datetime { get; set; }
         public System.Guid member_id { get; set; }
         public System.Guid location_id { get; set; }
@@ -36,5 +37,7 @@ namespace EasyJobsApi.Models
         public virtual Location Location { get; set; }
         public virtual Member Member { get; set; }
         public virtual Status Status { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Log> Log { get; set; }
     }
 }

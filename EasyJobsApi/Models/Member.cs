@@ -19,6 +19,7 @@ namespace EasyJobsApi.Models
         {
             this.Getjob = new HashSet<Getjob>();
             this.Work = new HashSet<Work>();
+            this.Log = new HashSet<Log>();
         }
     
         public System.Guid member_id { get; set; }
@@ -33,5 +34,7 @@ namespace EasyJobsApi.Models
         public virtual ICollection<Getjob> Getjob { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Work> Work { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Log> Log { get; set; }
     }
 }
