@@ -26,6 +26,8 @@ namespace EasyJobsApi.Controllers
 
             System.Guid gen_location_id = Guid.NewGuid();
             System.Guid gen_status_id = Guid.NewGuid();
+            System.Guid gen_work_id = Guid.NewGuid();
+            DateTime now = DateTime.Now;
 
             Location addlocation = new Location
             {
@@ -43,7 +45,7 @@ namespace EasyJobsApi.Controllers
 
             Work addwork = new Work
             {
-                work_id = Guid.NewGuid(),
+                work_id = gen_work_id,
                 work_name = ADW.work_name,
                 work_desc = ADW.work_desc,
                 tel = ADW.tel,
@@ -55,7 +57,16 @@ namespace EasyJobsApi.Controllers
                 location_id = gen_location_id
             };
 
-            
+            Log addLog = new Log
+            {
+                log_id = Guid.NewGuid(),
+                log_detail = "เพิ่มงาน",
+                work_id = gen_work_id,
+                member_id = ADW.member_id,
+                datetime = now
+            };
+
+            db.Log.Add(addLog);
             db.Status.Add(addStatus);
             db.Location.Add(addlocation);
             db.Work.Add(addwork);
@@ -116,7 +127,7 @@ namespace EasyJobsApi.Controllers
         {
             var member = JsonConvert.SerializeObject(req);
             GetJobDto ADW = JsonConvert.DeserializeObject<GetJobDto>(member);
-
+            DateTime now = DateTime.Now;
             System.Guid get_id = Guid.NewGuid();
             Getjob addmember_job = new Getjob
             {
@@ -138,6 +149,16 @@ namespace EasyJobsApi.Controllers
                 st.my_Status.status1 = "มีผู้รับงานแล้ว";
             }
 
+            Log addLog = new Log
+            {
+                log_id = Guid.NewGuid(),
+                log_detail = "รับงาน",
+                work_id = ADW.work_id,
+                member_id = ADW.member_id,
+                datetime = now
+            };
+
+            db.Log.Add(addLog);
             db.Getjob.Add(addmember_job);
             db.SaveChangesAsync();
             return Ok(addmember_job);

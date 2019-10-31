@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="EasyJobsModel1StoreContainer" CdmEntityContainer="EasyJobsEntities2">
+    <EntitySetMapping Name="Getjob">
+      <EntityTypeMapping TypeName="EasyJobsModel1.Getjob">
+        <MappingFragment StoreEntitySet="Getjob">
+          <ScalarProperty Name="get_id" ColumnName="get_id" />
+          <ScalarProperty Name="member_id" ColumnName="member_id" />
+          <ScalarProperty Name="work_id" ColumnName="work_id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Location">
+      <EntityTypeMapping TypeName="EasyJobsModel1.Location">
+        <MappingFragment StoreEntitySet="Location">
+          <ScalarProperty Name="location_id" ColumnName="location_id" />
+          <ScalarProperty Name="lat" ColumnName="lat" />
+          <ScalarProperty Name="long" ColumnName="long" />
+          <ScalarProperty Name="loc_name" ColumnName="loc_name" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Member">
+      <EntityTypeMapping TypeName="EasyJobsModel1.Member">
+        <MappingFragment StoreEntitySet="Member">
+          <ScalarProperty Name="member_id" ColumnName="member_id" />
+          <ScalarProperty Name="name" ColumnName="name" />
+          <ScalarProperty Name="surname" ColumnName="surname" />
+          <ScalarProperty Name="picture" ColumnName="picture" />
+          <ScalarProperty Name="tel" ColumnName="tel" />
+          <ScalarProperty Name="email" ColumnName="email" />
+          <ScalarProperty Name="password" ColumnName="password" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Status">
+      <EntityTypeMapping TypeName="EasyJobsModel1.Status">
+        <MappingFragment StoreEntitySet="Status">
+          <ScalarProperty Name="status_id" ColumnName="status_id" />
+          <ScalarProperty Name="status1" ColumnName="status" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Work">
+      <EntityTypeMapping TypeName="EasyJobsModel1.Work">
+        <MappingFragment StoreEntitySet="Work">
+          <ScalarProperty Name="work_id" ColumnName="work_id" />
+          <ScalarProperty Name="work_name" ColumnName="work_name" />
+          <ScalarProperty Name="work_desc" ColumnName="work_desc" />
+          <ScalarProperty Name="tel" ColumnName="tel" />
+          <ScalarProperty Name="labor_cost" ColumnName="labor_cost" />
+          <ScalarProperty Name="duration" ColumnName="duration" />
+          <ScalarProperty Name="datetime" ColumnName="datetime" />
+          <ScalarProperty Name="member_id" ColumnName="member_id" />
+          <ScalarProperty Name="location_id" ColumnName="location_id" />
+          <ScalarProperty Name="status_id" ColumnName="status_id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Log">
+      <EntityTypeMapping TypeName="EasyJobsModel1.Log">
+        <MappingFragment StoreEntitySet="Log">
+          <ScalarProperty Name="member_id" ColumnName="member_id" />
+          <ScalarProperty Name="work_id" ColumnName="work_id" />
+          <ScalarProperty Name="datetime" ColumnName="datetime" />
+          <ScalarProperty Name="log_detail" ColumnName="log_detail" />
+          <ScalarProperty Name="log_id" ColumnName="log_id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

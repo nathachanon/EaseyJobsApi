@@ -1,0 +1,198 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="EasyJobsModel1" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="Getjob">
+    <Key>
+      <PropertyRef Name="get_id" />
+    </Key>
+    <Property Name="get_id" Type="Guid" Nullable="false" />
+    <Property Name="member_id" Type="Guid" Nullable="false" />
+    <Property Name="work_id" Type="Guid" Nullable="false" />
+    <NavigationProperty Name="Member" Relationship="Self.FK_Getjob_member" FromRole="Getjob" ToRole="Member" />
+    <NavigationProperty Name="Work" Relationship="Self.FK_Getjob_work" FromRole="Getjob" ToRole="Work" />
+  </EntityType>
+  <EntityType Name="Location">
+    <Key>
+      <PropertyRef Name="location_id" />
+    </Key>
+    <Property Name="location_id" Type="Guid" Nullable="false" />
+    <Property Name="lat" Type="Double" Nullable="false" />
+    <Property Name="long" Type="Double" Nullable="false" />
+    <Property Name="loc_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <NavigationProperty Name="Work" Relationship="Self.FK_Work_location" FromRole="Location" ToRole="Work" />
+  </EntityType>
+  <EntityType Name="Member">
+    <Key>
+      <PropertyRef Name="member_id" />
+    </Key>
+    <Property Name="member_id" Type="Guid" Nullable="false" />
+    <Property Name="name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="surname" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="picture" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="tel" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="email" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="password" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+    <NavigationProperty Name="Getjob" Relationship="Self.FK_Getjob_member" FromRole="Member" ToRole="Getjob" />
+    <NavigationProperty Name="Work" Relationship="Self.FK_Work_member" FromRole="Member" ToRole="Work" />
+    <NavigationProperty Name="Log" Relationship="EasyJobsModel1.FK_Log_member" FromRole="Member" ToRole="Log" />
+  </EntityType>
+  <EntityType Name="Status">
+    <Key>
+      <PropertyRef Name="status_id" />
+    </Key>
+    <Property Name="status_id" Type="Guid" Nullable="false" />
+    <Property Name="status1" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Work" Relationship="Self.FK_Work_status" FromRole="Status" ToRole="Work" />
+  </EntityType>
+  <EntityType Name="Work">
+    <Key>
+      <PropertyRef Name="work_id" />
+    </Key>
+    <Property Name="work_id" Type="Guid" Nullable="false" />
+    <Property Name="work_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="work_desc" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="tel" Type="String" MaxLength="15" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="labor_cost" Type="Int32" Nullable="false" />
+    <Property Name="duration" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
+    <Property Name="datetime" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="member_id" Type="Guid" Nullable="false" />
+    <Property Name="location_id" Type="Guid" Nullable="false" />
+    <Property Name="status_id" Type="Guid" Nullable="false" />
+    <NavigationProperty Name="Getjob" Relationship="Self.FK_Getjob_work" FromRole="Work" ToRole="Getjob" />
+    <NavigationProperty Name="Location" Relationship="Self.FK_Work_location" FromRole="Work" ToRole="Location" />
+    <NavigationProperty Name="Member" Relationship="Self.FK_Work_member" FromRole="Work" ToRole="Member" />
+    <NavigationProperty Name="Status" Relationship="Self.FK_Work_status" FromRole="Work" ToRole="Status" />
+    <NavigationProperty Name="Log" Relationship="EasyJobsModel1.FK_Log_work" FromRole="Work" ToRole="Log" />
+  </EntityType>
+  <Association Name="FK_Getjob_member">
+    <End Role="Member" Type="Self.Member" Multiplicity="1" />
+    <End Role="Getjob" Type="Self.Getjob" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Member">
+        <PropertyRef Name="member_id" />
+      </Principal>
+      <Dependent Role="Getjob">
+        <PropertyRef Name="member_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Getjob_work">
+    <End Role="Work" Type="Self.Work" Multiplicity="1" />
+    <End Role="Getjob" Type="Self.Getjob" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Work">
+        <PropertyRef Name="work_id" />
+      </Principal>
+      <Dependent Role="Getjob">
+        <PropertyRef Name="work_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Work_location">
+    <End Role="Location" Type="Self.Location" Multiplicity="1" />
+    <End Role="Work" Type="Self.Work" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Location">
+        <PropertyRef Name="location_id" />
+      </Principal>
+      <Dependent Role="Work">
+        <PropertyRef Name="location_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Work_member">
+    <End Role="Member" Type="Self.Member" Multiplicity="1" />
+    <End Role="Work" Type="Self.Work" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Member">
+        <PropertyRef Name="member_id" />
+      </Principal>
+      <Dependent Role="Work">
+        <PropertyRef Name="member_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Work_status">
+    <End Role="Status" Type="Self.Status" Multiplicity="1" />
+    <End Role="Work" Type="Self.Work" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Status">
+        <PropertyRef Name="status_id" />
+      </Principal>
+      <Dependent Role="Work">
+        <PropertyRef Name="status_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="EasyJobsEntities2" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Getjob" EntityType="Self.Getjob" />
+    <EntitySet Name="Location" EntityType="Self.Location" />
+    <EntitySet Name="Member" EntityType="Self.Member" />
+    <EntitySet Name="Status" EntityType="Self.Status" />
+    <EntitySet Name="Work" EntityType="Self.Work" />
+    <AssociationSet Name="FK_Getjob_member" Association="Self.FK_Getjob_member">
+      <End Role="Member" EntitySet="Member" />
+      <End Role="Getjob" EntitySet="Getjob" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Getjob_work" Association="Self.FK_Getjob_work">
+      <End Role="Work" EntitySet="Work" />
+      <End Role="Getjob" EntitySet="Getjob" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Work_location" Association="Self.FK_Work_location">
+      <End Role="Location" EntitySet="Location" />
+      <End Role="Work" EntitySet="Work" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Work_member" Association="Self.FK_Work_member">
+      <End Role="Member" EntitySet="Member" />
+      <End Role="Work" EntitySet="Work" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Work_status" Association="Self.FK_Work_status">
+      <End Role="Status" EntitySet="Status" />
+      <End Role="Work" EntitySet="Work" />
+    </AssociationSet>
+    <EntitySet Name="Log" EntityType="EasyJobsModel1.Log" />
+    <AssociationSet Name="FK_Log_member" Association="EasyJobsModel1.FK_Log_member">
+      <End Role="Member" EntitySet="Member" />
+      <End Role="Log" EntitySet="Log" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Log_work" Association="EasyJobsModel1.FK_Log_work">
+      <End Role="Work" EntitySet="Work" />
+      <End Role="Log" EntitySet="Log" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="Log">
+    <Key>
+      <PropertyRef Name="log_id" />
+    </Key>
+    <Property Name="log_id" Type="Guid" Nullable="false" />
+    <Property Name="log_detail" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="datetime" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="work_id" Type="Guid" Nullable="false" />
+    <Property Name="member_id" Type="Guid" Nullable="false" />
+    <NavigationProperty Name="Member" Relationship="EasyJobsModel1.FK_Log_member" FromRole="Log" ToRole="Member" />
+    <NavigationProperty Name="Work" Relationship="EasyJobsModel1.FK_Log_work" FromRole="Log" ToRole="Work" />
+  </EntityType>
+  <Association Name="FK_Log_member">
+    <End Type="EasyJobsModel1.Member" Role="Member" Multiplicity="1" />
+    <End Type="EasyJobsModel1.Log" Role="Log" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Member">
+        <PropertyRef Name="member_id" />
+      </Principal>
+      <Dependent Role="Log">
+        <PropertyRef Name="member_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Log_work">
+    <End Type="EasyJobsModel1.Work" Role="Work" Multiplicity="1" />
+    <End Type="EasyJobsModel1.Log" Role="Log" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Work">
+        <PropertyRef Name="work_id" />
+      </Principal>
+      <Dependent Role="Log">
+        <PropertyRef Name="work_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema>
