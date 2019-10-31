@@ -17,7 +17,7 @@ namespace EasyJobsApi.Controllers
         private EasyJobsEntities1 db_local = new EasyJobsEntities1();
         private EasyJobsEntities2 db = new EasyJobsEntities2();
 
-        [Route("api/Work/AddWork")]
+        [Route("api/Work/AddWork")] //เพิ่มงาน
         [HttpPost]
         public IHttpActionResult AddWork([FromBody] AddWorkDto req)
         {
@@ -103,6 +103,7 @@ namespace EasyJobsApi.Controllers
             var query = from w in db.Work
                         join l in db.Location on w.location_id equals l.location_id
                         join m in db.Member on w.member_id equals m.member_id
+                        join s in db.Status on w.status_id equals s.status_id
                         where w.work_id == wr.work_id
                         select new
                         {
@@ -115,53 +116,377 @@ namespace EasyJobsApi.Controllers
                              l.loc_name,
                              l.lat,
                              l.@long,
-                             m.name
+                             m.name,
+                             s.status1
                         };
          
             return Ok(query);
         }
 
-        [Route("api/Work/GetJob")]
+        [Route("api/Work/GetJob")] //รับงาน
         [HttpPost]
         public IHttpActionResult GetJob([FromBody] GetJobDto req)
         {
             var member = JsonConvert.SerializeObject(req);
             GetJobDto ADW = JsonConvert.DeserializeObject<GetJobDto>(member);
-            DateTime now = DateTime.Now;
-            System.Guid get_id = Guid.NewGuid();
-            Getjob addmember_job = new Getjob
-            {
-                get_id = get_id,
-                member_id = ADW.member_id,
-                work_id = ADW.work_id
-            };
-            var get_status = db.Work.Where(o => o.work_id == ADW.work_id).Select(s => s.status_id).ToArray();
-            var status_update = (from x in db.Work
-                                 join y in db.Status on x.status_id equals y.status_id
-                                 where x.work_id == ADW.work_id
-                                 select new
-                                 {
-                                     my_Status = y
-                                 });
 
-            foreach(var st in status_update)
+            var get_work_status = from w in db.Work
+                                  join s in db.Status on w.status_id equals s.status_id into get
+                                  where w.work_id == ADW.work_id && w.member_id != ADW.member_id
+                                  select get.Where(s => s.status1 == "ว่าง").Count();
+            
+            if(get_work_status.FirstOrDefault() > 0)
             {
-                st.my_Status.status1 = "มีผู้รับงานแล้ว";
+                DateTime now = DateTime.Now;
+                System.Guid get_id = Guid.NewGuid();
+                Getjob addmember_job = new Getjob
+                {
+                    get_id = get_id,
+                    member_id = ADW.member_id,
+                    work_id = ADW.work_id
+                };
+                var get_status = db.Work.Where(o => o.work_id == ADW.work_id).Select(s => s.status_id).ToArray();
+                var status_update = (from x in db.Work
+                                     join y in db.Status on x.status_id equals y.status_id
+                                     where x.work_id == ADW.work_id
+                                     select new
+                                     {
+                                         my_Status = y
+                                     });
+
+                foreach (var st in status_update)
+                {
+                    st.my_Status.status1 = "มีผู้รับงานแล้ว";
+                }
+
+                Log addLog = new Log
+                {
+                    log_id = Guid.NewGuid(),
+                    log_detail = "รับงาน",
+                    work_id = ADW.work_id,
+                    member_id = ADW.member_id,
+                    datetime = now
+                };
+
+                db.Log.Add(addLog);
+                db.Getjob.Add(addmember_job);
+                db.SaveChangesAsync();
+                return Ok(addmember_job);
             }
-
-            Log addLog = new Log
+            else
             {
-                log_id = Guid.NewGuid(),
-                log_detail = "รับงาน",
-                work_id = ADW.work_id,
-                member_id = ADW.member_id,
-                datetime = now
-            };
+                return Content((HttpStatusCode)422, "ไม่พบงานที่รับ หรือ งานถูกรับไปแล้ว");
+            }
+            
+        }
 
-            db.Log.Add(addLog);
-            db.Getjob.Add(addmember_job);
-            db.SaveChangesAsync();
-            return Ok(addmember_job);
+        [Route("api/allWork_blank")] //งานทั้งหมดที่ว่าง
+        [HttpGet]
+        public IHttpActionResult GetAllWork_blank()
+        {
+            var work_blank = (from x in db.Work
+                                 join y in db.Status on x.status_id equals y.status_id
+                                 where y.status1 == "ว่าง"
+                                 select new WorkDto
+                                 {
+                                     work_id = x.work_id,
+                                     work_name = x.work_name,
+                                     work_desc = x.work_desc,
+                                     labor_cost = x.labor_cost,
+                                     duration = x.duration,
+                                     member_id = x.member_id,
+                                     location_id = x.location_id,
+                                     status_id = x.status_id
+                                 });
+            return Ok(work_blank);
+        }
+
+        [Route("api/work_post")] //งานที่เราโพส
+        [HttpPost]
+        public IHttpActionResult GetWork_post([FromBody] MemberOnlyDto req)
+        {
+            var mw = JsonConvert.SerializeObject(req);
+            MemberOnlyDto wr = JsonConvert.DeserializeObject<MemberOnlyDto>(mw);
+
+            var work_post = (from x in db.Work
+                              where x.member_id == wr.member_id
+                              select new WorkDto
+                              {
+                                  work_id = x.work_id,
+                                  work_name = x.work_name,
+                                  work_desc = x.work_desc,
+                                  labor_cost = x.labor_cost,
+                                  duration = x.duration,
+                                  member_id = x.member_id,
+                                  location_id = x.location_id,
+                                  status_id = x.status_id
+                              });
+
+            return Ok(work_post);
+        }
+
+        [Route("api/work_get")] //งานที่รับ (ยังไม่ได้ทำงาน แค่รับ)
+        [HttpPost]
+        public IHttpActionResult GetWork_get([FromBody] MemberOnlyDto req)
+        {
+            var mw = JsonConvert.SerializeObject(req);
+            MemberOnlyDto wr = JsonConvert.DeserializeObject<MemberOnlyDto>(mw);
+
+            var work_blank = (from x in db.Work
+                              join y in db.Log on x.work_id equals y.work_id
+                              join z in db.Status on x.status_id equals z.status_id
+                              where y.member_id == wr.member_id && z.status1 == "มีผู้รับงานแล้ว"
+                              select new WorkDto
+                              {
+                                  work_id = x.work_id,
+                                  work_name = x.work_name,
+                                  work_desc = x.work_desc,
+                                  labor_cost = x.labor_cost,
+                                  duration = x.duration,
+                                  member_id = x.member_id,
+                                  location_id = x.location_id,
+                                  status_id = x.status_id
+                              });
+
+            return Ok(work_blank);
+        }
+
+        [Route("api/work_start")] //เริ่มงาน (คนลงงาน กดเมื่อเริ่มงาน)
+        [HttpPost]
+        public IHttpActionResult Work_Start([FromBody] MemberWorkDto req)
+        {
+            DateTime now = DateTime.Now;
+
+            var mw = JsonConvert.SerializeObject(req);
+            MemberWorkDto wr = JsonConvert.DeserializeObject<MemberWorkDto>(mw);
+            var get_work_status = from w in db.Work
+                                  join s in db.Status on w.status_id equals s.status_id into get
+                                  where w.member_id == wr.member_id && w.work_id == wr.work_id
+                                  select get.Where(s => s.status1 == "มีผู้รับงานแล้ว").Count();
+
+            if(get_work_status.FirstOrDefault() > 0)
+            {
+                var status_update = (from x in db.Work
+                                     join y in db.Status on x.status_id equals y.status_id
+                                     where x.work_id == wr.work_id
+                                     select new
+                                     {
+                                         my_Status = y
+                                     });
+                var get_worker_id = from a in db.Getjob where a.work_id == wr.work_id select a.member_id;
+
+                foreach (var st in status_update)
+                {
+                    st.my_Status.status1 = "เริ่มงาน";
+                }
+
+                Log addLog = new Log
+                {
+                    log_id = Guid.NewGuid(),
+                    log_detail = "งานที่คุณลง กำลังทำ",
+                    work_id = wr.work_id,
+                    member_id = wr.member_id,
+                    datetime = now
+                };
+
+                Log addLog_worker = new Log
+                {
+                    log_id = Guid.NewGuid(),
+                    log_detail = "งานที่คุณรับ กำลังทำ",
+                    work_id = wr.work_id,
+                    member_id = get_worker_id.First(),
+                    datetime = now
+                };
+
+                db.Log.Add(addLog);
+                db.Log.Add(addLog_worker);
+                db.SaveChangesAsync();
+
+                return Ok(addLog);
+            }
+            else
+            {
+                return Content((HttpStatusCode)422, "ไม่พบงานที่ต้องเริ่ม หรือ คุณไม่ใช่คนโพสงาน");
+            }
+        }
+
+        [Route("api/work_finish")] //เสร็จงาน (คนลงงาน กดเมื่องานเสร็จ)
+        [HttpPost]
+        public IHttpActionResult Work_finish([FromBody] MemberWorkDto req)
+        {
+            DateTime now = DateTime.Now;
+
+            var mw = JsonConvert.SerializeObject(req);
+            MemberWorkDto wr = JsonConvert.DeserializeObject<MemberWorkDto>(mw);
+            var get_work_status = from w in db.Work
+                                  join s in db.Status on w.status_id equals s.status_id into get
+                                  where w.member_id == wr.member_id && w.work_id == wr.work_id
+                                  select get.Where(s => s.status1 == "เริ่มงาน").Count();
+            if (get_work_status.FirstOrDefault() > 0)
+            {
+                var status_update = (from x in db.Work
+                                     join y in db.Status on x.status_id equals y.status_id
+                                     where x.work_id == wr.work_id
+                                     select new
+                                     {
+                                         my_Status = y
+                                     });
+                var get_worker_id = from a in db.Getjob where a.work_id == wr.work_id select a.member_id;
+
+                foreach (var st in status_update)
+                {
+                    st.my_Status.status1 = "เสร็จสิ้น";
+                }
+
+                Log addLog = new Log
+                {
+                    log_id = Guid.NewGuid(),
+                    log_detail = "งานที่คุณลง เสร็จสิ้นแล้ว",
+                    work_id = wr.work_id,
+                    member_id = wr.member_id,
+                    datetime = now
+                };
+
+                Log addLog_worker = new Log
+                {
+                    log_id = Guid.NewGuid(),
+                    log_detail = "งานที่คุณรับ เสร็จสิ้นแล้ว",
+                    work_id = wr.work_id,
+                    member_id = get_worker_id.First(),
+                    datetime = now
+                };
+
+                db.Log.Add(addLog);
+                db.Log.Add(addLog_worker);
+                db.SaveChangesAsync();
+
+                return Ok(addLog);
+            }
+            else
+            {
+                return Content((HttpStatusCode)422, "ไม่พบงานที่เสร็จ หรือ คุณไม่ใช่คนโพสงาน");
+            }
+        }
+
+        [Route("api/work_postfinish")] //งานที่เราโพสที่ทำเสร็จแล้ว
+        [HttpPost]
+        public IHttpActionResult GetWork_postfinish([FromBody] MemberOnlyDto req)
+        {
+            var mw = JsonConvert.SerializeObject(req);
+            MemberOnlyDto wr = JsonConvert.DeserializeObject<MemberOnlyDto>(mw);
+
+            var work_post = (from x in db.Work
+                             join s in db.Status on x.status_id equals s.status_id
+                             where x.member_id == wr.member_id && s.status1 == "เสร็จสิ้น"
+                             select new WorkDto
+                             {
+                                 work_id = x.work_id,
+                                 work_name = x.work_name,
+                                 work_desc = x.work_desc,
+                                 labor_cost = x.labor_cost,
+                                 duration = x.duration,
+                                 member_id = x.member_id,
+                                 location_id = x.location_id,
+                                 status_id = x.status_id
+                             });
+
+            return Ok(work_post);
+        }
+
+        [Route("api/work_postprocess")] //งานที่เราโพสที่กำลังทำ
+        [HttpPost]
+        public IHttpActionResult GetWork_postprocess([FromBody] MemberOnlyDto req)
+        {
+            var mw = JsonConvert.SerializeObject(req);
+            MemberOnlyDto wr = JsonConvert.DeserializeObject<MemberOnlyDto>(mw);
+
+            var work_post = (from x in db.Work
+                             join s in db.Status on x.status_id equals s.status_id
+                             where x.member_id == wr.member_id && s.status1 == "เริ่มงาน"
+                             select new WorkDto
+                             {
+                                 work_id = x.work_id,
+                                 work_name = x.work_name,
+                                 work_desc = x.work_desc,
+                                 labor_cost = x.labor_cost,
+                                 duration = x.duration,
+                                 member_id = x.member_id,
+                                 location_id = x.location_id,
+                                 status_id = x.status_id
+                             });
+
+            return Ok(work_post);
+        }
+
+        [Route("api/work_getprocess")] //งานที่เรารับที่กำลังทำ
+        [HttpPost]
+        public IHttpActionResult GetWork_getprocess([FromBody] MemberOnlyDto req)
+        {
+            var mw = JsonConvert.SerializeObject(req);
+            MemberOnlyDto wr = JsonConvert.DeserializeObject<MemberOnlyDto>(mw);
+
+            var work_post = (from x in db.Getjob
+                             join w in db.Work on x.work_id equals w.work_id
+                             join s in db.Status on w.status_id equals s.status_id
+                             where x.member_id == wr.member_id && s.status1 == "เริ่มงาน"
+                             select new WorkDto
+                             {
+                                 work_id = w.work_id,
+                                 work_name = w.work_name,
+                                 work_desc = w.work_desc,
+                                 labor_cost = w.labor_cost,
+                                 duration = w.duration,
+                                 member_id = w.member_id,
+                                 location_id = w.location_id,
+                                 status_id = w.status_id
+                             });
+
+            return Ok(work_post);
+        }
+
+        [Route("api/work_getfinish")] //งานที่เรารับที่ทำเสร็จแล้ว
+        [HttpPost]
+        public IHttpActionResult GetWork_getfinish([FromBody] MemberOnlyDto req)
+        {
+            var mw = JsonConvert.SerializeObject(req);
+            MemberOnlyDto wr = JsonConvert.DeserializeObject<MemberOnlyDto>(mw);
+
+            var work_post = (from x in db.Getjob
+                             join w in db.Work on x.work_id equals w.work_id
+                             join s in db.Status on w.status_id equals s.status_id
+                             where x.member_id == wr.member_id && s.status1 == "เสร็จสิ้น"
+                             select new WorkDto
+                             {
+                                 work_id = w.work_id,
+                                 work_name = w.work_name,
+                                 work_desc = w.work_desc,
+                                 labor_cost = w.labor_cost,
+                                 duration = w.duration,
+                                 member_id = w.member_id,
+                                 location_id = w.location_id,
+                                 status_id = w.status_id
+                             });
+
+            return Ok(work_post);
+        }
+
+        [Route("api/get_log")] //ดูประวัติในการใช้งานทั้งระบบ
+        [HttpPost]
+        public IHttpActionResult GetLog([FromBody] MemberOnlyDto req)
+        {
+            var mw = JsonConvert.SerializeObject(req);
+            MemberOnlyDto wr = JsonConvert.DeserializeObject<MemberOnlyDto>(mw);
+
+            var work_post = (from x in db.Log
+                             where x.member_id == wr.member_id orderby x.datetime descending
+                             select new
+                             {
+                                 Detail = x.log_detail,
+                                 Work_id = x.work_id,
+                                 Datetime = x.datetime
+                             });
+
+            return Ok(work_post);
         }
     }
 }
