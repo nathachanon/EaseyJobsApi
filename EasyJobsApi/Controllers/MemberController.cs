@@ -1,21 +1,13 @@
 ﻿using EasyJobsApi.DTO;
 using EasyJobsApi.Models;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Helpers;
 using System.Web.Http;
-using System.Web.Http.Description;
-using System.Web.UI.WebControls;
 
 namespace EasyJobsApi.Controllers
 {
@@ -181,6 +173,31 @@ namespace EasyJobsApi.Controllers
         private string GenerateNewFileName(string prefix = "IMG")
         {
             return prefix + "_" + DateTime.UtcNow.ToString("yyyy-MMM-dd_HH-mm-ss");
+        }
+        [Route("api/Member/edit")]
+        [HttpPost]
+        public IHttpActionResult edit([FromBody] editMember req)
+        {
+            var member = JsonConvert.SerializeObject(req);
+            editMember M = JsonConvert.DeserializeObject<editMember>(member);
+
+            var status_update = (from x in db.Member      
+                                 where x.member_id == M.member_id
+                                 select new
+                                 {
+                                     my_member = x
+                                 });
+
+            foreach (var st in status_update)
+            {
+                st.my_member.name = M.name;
+                st.my_member.surname = M.surname;
+                st.my_member.email = M.email;
+                st.my_member.tel = M.tel;
+
+            }
+            db.SaveChangesAsync();
+            return Ok("Edit succes");
         }
     }
 }
