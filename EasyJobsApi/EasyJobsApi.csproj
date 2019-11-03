@@ -190,14 +190,15 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MemberController.cs" />
     <Compile Include="Controllers\MembersController.cs" />
-    <Compile Include="Controllers\TestController.cs" />
-    <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Controllers\WorkController.cs" />
     <Compile Include="DTO\AddWorkDto.cs" />
+    <Compile Include="DTO\FileUpload.cs" />
     <Compile Include="DTO\GetJobDto.cs" />
     <Compile Include="DTO\LoginMemberDto.cs" />
     <Compile Include="DTO\MemberDto.cs" />
+    <Compile Include="DTO\MemberWorkDto.cs" />
     <Compile Include="DTO\RegisterMemberDto.cs" />
+    <Compile Include="DTO\UploadPictureDto.cs" />
     <Compile Include="DTO\WorkDetail.cs" />
     <Compile Include="DTO\WorkDto.cs" />
     <Compile Include="Global.asax.cs">
@@ -237,6 +238,9 @@
       <DependentUpon>EasyJobServerModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Location.cs">
+      <DependentUpon>EasyJobServerModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Log.cs">
       <DependentUpon>EasyJobServerModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Member.cs">
