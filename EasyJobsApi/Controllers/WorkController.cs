@@ -493,5 +493,27 @@ namespace EasyJobsApi.Controllers
 
             return Ok(work_post);
         }
+        [Route("api/work/search")] //งานทั้งหมดที่ว่าง
+        [HttpPost]
+        public IHttpActionResult search([FromBody] search req)
+        {
+            var mw = JsonConvert.SerializeObject(req);
+            search wr = JsonConvert.DeserializeObject<search>(mw);
+            var work_blank = (from x in db.Work
+                              join y in db.Status on x.status_id equals y.status_id
+                              where y.status1 == "ว่าง" && x.work_name.Contains(wr.name) 
+                              select new WorkDto
+                              {
+                                  work_id = x.work_id,
+                                  work_name = x.work_name,
+                                  work_desc = x.work_desc,
+                                  labor_cost = x.labor_cost,
+                                  duration = x.duration,
+                                  member_id = x.member_id,
+                                  location_id = x.location_id,
+                                  status_id = x.status_id
+                              });
+            return Ok(work_blank);
+        }
     }
 }

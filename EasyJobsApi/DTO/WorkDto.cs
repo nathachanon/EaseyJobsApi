@@ -16,4 +16,9 @@ namespace EasyJobsApi.DTO
         public System.Guid location_id { get; set; }
         public System.Guid status_id { get; set; }
     }
+    public class search
+    {
+            public string name { get; set; }
+
+    }
 }

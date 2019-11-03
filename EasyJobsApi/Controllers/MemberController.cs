@@ -174,5 +174,30 @@ namespace EasyJobsApi.Controllers
         {
             return prefix + "_" + DateTime.UtcNow.ToString("yyyy-MMM-dd_HH-mm-ss");
         }
+        [Route("api/Member/edit")]
+        [HttpPost]
+        public IHttpActionResult edit([FromBody] editMember req)
+        {
+            var member = JsonConvert.SerializeObject(req);
+            editMember M = JsonConvert.DeserializeObject<editMember>(member);
+
+            var status_update = (from x in db.Member      
+                                 where x.member_id == M.member_id
+                                 select new
+                                 {
+                                     my_member = x
+                                 });
+
+            foreach (var st in status_update)
+            {
+                st.my_member.name = M.name;
+                st.my_member.surname = M.surname;
+                st.my_member.email = M.email;
+                st.my_member.tel = M.tel;
+
+            }
+            db.SaveChangesAsync();
+            return Ok("Edit succes");
+        }
     }
 }
