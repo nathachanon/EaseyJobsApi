@@ -517,9 +517,9 @@ namespace EasyJobsApi.Controllers
             var mw = JsonConvert.SerializeObject(req);
             MemberOnlyDto wr = JsonConvert.DeserializeObject<MemberOnlyDto>(mw);
 
-            var work_count = (from x in db.Work
+            var work_count = (from x in db.Getjob
                               where x.member_id == wr.member_id
-                              orderby x.datetime descending
+                              
                               select new
                               {
 
