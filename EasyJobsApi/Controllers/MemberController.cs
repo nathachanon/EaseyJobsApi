@@ -1,3 +1,4 @@
+
 ﻿using EasyJobsApi.DTO;
 using EasyJobsApi.Models;
 using Newtonsoft.Json;
@@ -201,3 +202,4 @@ namespace EasyJobsApi.Controllers
         }
     }
 }
+
