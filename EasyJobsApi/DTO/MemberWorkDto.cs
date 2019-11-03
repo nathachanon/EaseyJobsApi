@@ -15,4 +15,14 @@ namespace EasyJobsApi.DTO
     {
         public Guid member_id { get; set; }
     }
+    public class editMember
+    {
+        public Guid member_id { get; set; }
+        public string name { get; set; }
+        public string surname { get; set; }
+        public string tel { get; set; }
+        public string email { get; set; }
+
+
+    }
 }
