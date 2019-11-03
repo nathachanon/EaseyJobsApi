@@ -510,5 +510,22 @@ namespace EasyJobsApi.Controllers
                               });
             return Ok(work_blank);
         }
+        [Route("api/work_count")] //
+        [HttpPost]
+        public IHttpActionResult workcount([FromBody] MemberOnlyDto req)
+        {
+            var mw = JsonConvert.SerializeObject(req);
+            MemberOnlyDto wr = JsonConvert.DeserializeObject<MemberOnlyDto>(mw);
+
+            var work_count = (from x in db.Work
+                              where x.member_id == wr.member_id
+                              orderby x.datetime descending
+                              select new
+                              {
+
+                              }).Count();
+
+            return Ok(work_count);
+        }
     }
 }
