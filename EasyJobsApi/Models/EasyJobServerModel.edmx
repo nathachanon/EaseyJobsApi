@@ -20,7 +20,7 @@
           <Property Name="location_id" Type="uniqueidentifier" Nullable="false" />
           <Property Name="lat" Type="float" Nullable="false" />
           <Property Name="long" Type="float" Nullable="false" />
-          <Property Name="loc_name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="loc_name" Type="nvarchar(max)" Nullable="false" />
         </EntityType>
         <EntityType Name="Log">
           <Key>
@@ -207,7 +207,7 @@
           <Property Name="location_id" Type="Guid" Nullable="false" />
           <Property Name="lat" Type="Double" Nullable="false" />
           <Property Name="long" Type="Double" Nullable="false" />
-          <Property Name="loc_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="loc_name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="Work" Relationship="Self.FK_Work_location" FromRole="Location" ToRole="Work" />
         </EntityType>
         <EntityType Name="Member">
