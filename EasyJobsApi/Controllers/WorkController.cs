@@ -51,7 +51,7 @@ namespace EasyJobsApi.Controllers
                 tel = ADW.tel,
                 labor_cost = ADW.labor_cost,
                 duration = ADW.duration,
-                datetime = ADW.datetime,
+                datetime = now,
                 member_id = ADW.member_id,
                 status_id = gen_status_id,
                 location_id = gen_location_id

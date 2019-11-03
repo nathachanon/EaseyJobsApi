@@ -1,16 +1,23 @@
 ﻿using EasyJobsApi.DTO;
 using EasyJobsApi.Models;
+
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
+using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Helpers;
 using System.Web.Http;
-
+using System.Web.Http.Description;
+using System.Web.UI.WebControls;
+
 namespace EasyJobsApi.Controllers
 {
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class MemberController : ApiController
     {
         private EasyJobsEntities1 db_local = new EasyJobsEntities1();
@@ -140,64 +147,39 @@ namespace EasyJobsApi.Controllers
             }
             else
             {
-                 return StatusCode(HttpStatusCode.NoContent);
+                return StatusCode(HttpStatusCode.NoContent);
             }
-           
+
         }
 
         [Route("api/Member/Upload")]
-        [HttpPost]
-        public async Task<IHttpActionResult> Upload()
-        {
-            if (System.Web.HttpContext.Current.Request.Files.AllKeys.Any())
-            {
-                // Get the uploaded image from the Files collection  
-                var httpPostedFile = System.Web.HttpContext.Current.Request.Files["UploadedImage"];
-                if (httpPostedFile != null)
-                {
-                    DTO.FileUpload imgupload = new DTO.FileUpload();
-                    int length = httpPostedFile.ContentLength;
-                    imgupload.imagedata = new byte[length]; //get imagedata  
-                    httpPostedFile.InputStream.Read(imgupload.imagedata, 0, length);
-                    imgupload.imagename = Path.GetFileName(httpPostedFile.FileName);
-                    var file_name = GenerateNewFileName() + Path.GetExtension(httpPostedFile.FileName);
-                    var fileSavePath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/Member_image"), file_name);
-                    // Save the uploaded file to "UploadedFiles" folder  
-                    httpPostedFile.SaveAs(fileSavePath);
-                    return Ok("Upload Success : " + file_name);
-                }
-            }
-            return Ok("Image is not Uploaded");
-        }
-
-        private string GenerateNewFileName(string prefix = "IMG")
-        {
-            return prefix + "_" + DateTime.UtcNow.ToString("yyyy-MMM-dd_HH-mm-ss");
-        }
-        [Route("api/Member/edit")]
-        [HttpPost]
-        public IHttpActionResult edit([FromBody] editMember req)
-        {
-            var member = JsonConvert.SerializeObject(req);
-            editMember M = JsonConvert.DeserializeObject<editMember>(member);
-
-            var status_update = (from x in db.Member      
-                                 where x.member_id == M.member_id
-                                 select new
-                                 {
-                                     my_member = x
-                                 });
-
-            foreach (var st in status_update)
-            {
-                st.my_member.name = M.name;
-                st.my_member.surname = M.surname;
-                st.my_member.email = M.email;
-                st.my_member.tel = M.tel;
-
-            }
-            db.SaveChangesAsync();
-            return Ok("Edit succes");
-        }
+        [HttpPost]
+        public async Task<IHttpActionResult> Upload()
+        {
+            if (System.Web.HttpContext.Current.Request.Files.AllKeys.Any())
+            {
+                // Get the uploaded image from the Files collection  
+                var httpPostedFile = System.Web.HttpContext.Current.Request.Files["UploadedImage"];
+                if (httpPostedFile != null)
+                {
+                    DTO.FileUpload imgupload = new DTO.FileUpload();
+                    int length = httpPostedFile.ContentLength;
+                    imgupload.imagedata = new byte[length]; //get imagedata  
+                    httpPostedFile.InputStream.Read(imgupload.imagedata, 0, length);
+                    imgupload.imagename = Path.GetFileName(httpPostedFile.FileName);
+                    var file_name = GenerateNewFileName() + Path.GetExtension(httpPostedFile.FileName);
+                    var fileSavePath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/Member_image"), file_name);
+                    // Save the uploaded file to "UploadedFiles" folder  
+                    httpPostedFile.SaveAs(fileSavePath);
+                    return Ok("Upload Success : " + file_name);
+                }
+            }
+            return Ok("Image is not Uploaded");
+        }
+
+        private string GenerateNewFileName(string prefix = "IMG")
+        {
+            return prefix + "_" + DateTime.UtcNow.ToString("yyyy-MMM-dd_HH-mm-ss");
+        }
     }
 }
