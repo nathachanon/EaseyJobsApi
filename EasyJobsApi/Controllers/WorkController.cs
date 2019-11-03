@@ -186,17 +186,22 @@ namespace EasyJobsApi.Controllers
         {
             var work_blank = (from x in db.Work
                                  join y in db.Status on x.status_id equals y.status_id
+                                 join z in db.Location on x.location_id equals z.location_id
                                  where y.status1 == "ว่าง"
-                                 select new WorkDto
+                                 select new
                                  {
                                      work_id = x.work_id,
+                                     member_id = x.member_id,
                                      work_name = x.work_name,
                                      work_desc = x.work_desc,
+                                     tel = x.tel,
                                      labor_cost = x.labor_cost,
                                      duration = x.duration,
-                                     member_id = x.member_id,
-                                     location_id = x.location_id,
-                                     status_id = x.status_id
+                                     datetime = x.datetime,
+                                     status = y.status1,
+                                     lat = z.lat,
+                                     @long = z.@long,
+                                     loc_name = z.loc_name
                                  });
             return Ok(work_blank);
         }
