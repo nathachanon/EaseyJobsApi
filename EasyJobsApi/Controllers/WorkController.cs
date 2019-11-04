@@ -512,12 +512,12 @@ namespace EasyJobsApi.Controllers
         }
         [Route("api/work_count")] //
         [HttpPost]
-        public IHttpActionResult workcount([FromBody] MemberOnlyDto req)
+        public IHttpActionResult jobcount([FromBody] MemberOnlyDto req)
         {
             var mw = JsonConvert.SerializeObject(req);
             MemberOnlyDto wr = JsonConvert.DeserializeObject<MemberOnlyDto>(mw);
-
-            var work_count = (from x in db.Getjob
+            
+            var jobcount = (from x in db.Getjob
                               where x.member_id == wr.member_id
                               
                               select new
@@ -525,7 +525,22 @@ namespace EasyJobsApi.Controllers
 
                               }).Count();
 
-            return Ok(work_count);
+            var workcount = (from x in db.Work
+                             where x.member_id == wr.member_id
+
+                             select new
+                             {
+
+                             }).Count();
+
+            var data = new { jobcount, workcount };
+
+            return Ok(data);
+          
         }
+
+       
+
+
     }
 }
