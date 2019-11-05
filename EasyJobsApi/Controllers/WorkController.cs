@@ -246,6 +246,7 @@ namespace EasyJobsApi.Controllers
                       join s in db.Status on c.status_id equals s.status_id
                       join d in db.Getjob on c.work_id equals d.work_id into d2
                       from f in d2.DefaultIfEmpty()
+                      where c.member_id == wr.member_id
                       select new
                       {
                           work_id = c.work_id,
