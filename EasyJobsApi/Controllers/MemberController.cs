@@ -9,9 +9,11 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web.Helpers;
 using System.Web.Http;
+using System.Web.Http.Cors;
 
 namespace EasyJobsApi.Controllers
 {
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class MemberController : ApiController
     {
         private EasyJobsEntities1 db_local = new EasyJobsEntities1();
