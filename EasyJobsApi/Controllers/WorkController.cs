@@ -107,19 +107,20 @@ namespace EasyJobsApi.Controllers
                         where w.work_id == wr.work_id
                         select new
                         {
-                             w.work_id,
-                             w.work_name,
-                             w.work_desc,
-                             w.labor_cost,
-                             w.tel,
-                             w.duration,
-                             l.loc_name,
-                             l.lat,
-                             l.@long,
-                             m.name,
-                             s.status1
+                            m.member_id,
+                            w.work_id,
+                            w.work_name,
+                            w.work_desc,
+                            w.labor_cost,
+                            w.tel,
+                            w.duration,
+                            l.loc_name,
+                            l.lat,
+                            l.@long,
+                            m.name,
+                            s.status1
                         };
-         
+
             return Ok(query);
         }
 
@@ -134,8 +135,8 @@ namespace EasyJobsApi.Controllers
                                   join s in db.Status on w.status_id equals s.status_id into get
                                   where w.work_id == ADW.work_id && w.member_id != ADW.member_id
                                   select get.Where(s => s.status1 == "ว่าง").Count();
-            
-            if(get_work_status.FirstOrDefault() > 0)
+
+            if (get_work_status.FirstOrDefault() > 0)
             {
                 DateTime now = DateTime.Now;
                 System.Guid get_id = Guid.NewGuid();
@@ -177,7 +178,7 @@ namespace EasyJobsApi.Controllers
             {
                 return Content((HttpStatusCode)422, "ไม่พบงานที่รับ หรือ งานถูกรับไปแล้ว");
             }
-            
+
         }
 
         [Route("api/allWork_blank")] //งานทั้งหมดที่ว่าง
@@ -185,24 +186,24 @@ namespace EasyJobsApi.Controllers
         public IHttpActionResult GetAllWork_blank()
         {
             var work_blank = (from x in db.Work
-                                 join y in db.Status on x.status_id equals y.status_id
-                                 join z in db.Location on x.location_id equals z.location_id
-                                 where y.status1 == "ว่าง"
-                                 select new
-                                 {
-                                     work_id = x.work_id,
-                                     member_id = x.member_id,
-                                     work_name = x.work_name,
-                                     work_desc = x.work_desc,
-                                     tel = x.tel,
-                                     labor_cost = x.labor_cost,
-                                     duration = x.duration,
-                                     datetime = x.datetime,
-                                     status = y.status1,
-                                     lat = z.lat,
-                                     @long = z.@long,
-                                     loc_name = z.loc_name
-                                 });
+                              join y in db.Status on x.status_id equals y.status_id
+                              join z in db.Location on x.location_id equals z.location_id
+                              where y.status1 == "ว่าง"
+                              select new
+                              {
+                                  work_id = x.work_id,
+                                  member_id = x.member_id,
+                                  work_name = x.work_name,
+                                  work_desc = x.work_desc,
+                                  tel = x.tel,
+                                  labor_cost = x.labor_cost,
+                                  duration = x.duration,
+                                  datetime = x.datetime,
+                                  status = y.status1,
+                                  lat = z.lat,
+                                  @long = z.@long,
+                                  loc_name = z.loc_name
+                              });
             return Ok(work_blank);
         }
 
@@ -214,18 +215,20 @@ namespace EasyJobsApi.Controllers
             MemberOnlyDto wr = JsonConvert.DeserializeObject<MemberOnlyDto>(mw);
 
             var work_post = (from x in db.Work
-                              where x.member_id == wr.member_id
-                              select new WorkDto
-                              {
-                                  work_id = x.work_id,
-                                  work_name = x.work_name,
-                                  work_desc = x.work_desc,
-                                  labor_cost = x.labor_cost,
-                                  duration = x.duration,
-                                  member_id = x.member_id,
-                                  location_id = x.location_id,
-                                  status_id = x.status_id
-                              });
+                             join z in db.Status on x.status_id equals z.status_id
+                             where x.member_id == wr.member_id
+                             select new 
+                             {
+                                 work_id = x.work_id,
+                                 work_name = x.work_name,
+                                 work_desc = x.work_desc,
+                                 labor_cost = x.labor_cost,
+                                 duration = x.duration,
+                                 member_id = x.member_id,
+                                 location_id = x.location_id,
+                                 status = z.status1,
+                                 
+                             });
 
             return Ok(work_post);
         }
@@ -237,11 +240,13 @@ namespace EasyJobsApi.Controllers
             var mw = JsonConvert.SerializeObject(req);
             MemberOnlyDto wr = JsonConvert.DeserializeObject<MemberOnlyDto>(mw);
 
+       
             var work_blank = (from x in db.Work
                               join y in db.Log on x.work_id equals y.work_id
                               join z in db.Status on x.status_id equals z.status_id
-                              where y.member_id == wr.member_id && z.status1 == "มีผู้รับงานแล้ว"
-                              select new WorkDto
+                              where y.member_id == wr.member_id && x.work_id == y.work_id
+                              
+                              select new 
                               {
                                   work_id = x.work_id,
                                   work_name = x.work_name,
@@ -250,8 +255,10 @@ namespace EasyJobsApi.Controllers
                                   duration = x.duration,
                                   member_id = x.member_id,
                                   location_id = x.location_id,
-                                  status_id = x.status_id
-                              });
+                                  status = z.status1,
+                                
+                                  
+                              }).Distinct();
 
             return Ok(work_blank);
         }
@@ -269,7 +276,7 @@ namespace EasyJobsApi.Controllers
                                   where w.member_id == wr.member_id && w.work_id == wr.work_id
                                   select get.Where(s => s.status1 == "มีผู้รับงานแล้ว").Count();
 
-            if(get_work_status.FirstOrDefault() > 0)
+            if (get_work_status.FirstOrDefault() > 0)
             {
                 var status_update = (from x in db.Work
                                      join y in db.Status on x.status_id equals y.status_id
@@ -483,7 +490,8 @@ namespace EasyJobsApi.Controllers
             MemberOnlyDto wr = JsonConvert.DeserializeObject<MemberOnlyDto>(mw);
 
             var work_post = (from x in db.Log
-                             where x.member_id == wr.member_id orderby x.datetime descending
+                             where x.member_id == wr.member_id
+                             orderby x.datetime descending
                              select new
                              {
                                  Detail = x.log_detail,
@@ -501,8 +509,9 @@ namespace EasyJobsApi.Controllers
             search wr = JsonConvert.DeserializeObject<search>(mw);
             var work_blank = (from x in db.Work
                               join y in db.Status on x.status_id equals y.status_id
-                              where y.status1 == "ว่าง" && x.work_name.Contains(wr.name) 
-                              select new WorkDto
+                              join z in db.Location on x.location_id equals z.location_id
+                              where y.status1 == "ว่าง" && x.work_name.Contains(wr.name)
+                              select new
                               {
                                   work_id = x.work_id,
                                   work_name = x.work_name,
@@ -511,9 +520,55 @@ namespace EasyJobsApi.Controllers
                                   duration = x.duration,
                                   member_id = x.member_id,
                                   location_id = x.location_id,
-                                  status_id = x.status_id
+                                  status_id = x.status_id,
+                                  lat = z.lat,
+                                  @long = z.@long,
                               });
             return Ok(work_blank);
+        }
+
+        [Route("api/job_count")] // 
+        [HttpPost]
+        public IHttpActionResult jobcount([FromBody] MemberOnlyDto req)
+        {
+            var mw = JsonConvert.SerializeObject(req);
+            MemberOnlyDto wr = JsonConvert.DeserializeObject<MemberOnlyDto>(mw);
+
+            var jobcount = (from x in db.Getjob
+                            where x.member_id == wr.member_id
+
+                            select new
+                            {
+
+                            }).Count();
+
+            var workcount = (from x in db.Work
+                             where x.member_id == wr.member_id
+
+                             select new
+                             {
+
+                             }).Count();
+
+            var work_do = (from x in db.Getjob
+                             join w in db.Work on x.work_id equals w.work_id
+                             join s in db.Status on w.status_id equals s.status_id
+                             where x.member_id == wr.member_id && s.status1 == "เริ่มงาน"
+                             select x).Count();
+
+            var work_finish = (from x in db.Getjob
+                             join w in db.Work on x.work_id equals w.work_id
+                             join s in db.Status on w.status_id equals s.status_id
+                             where x.member_id == wr.member_id && s.status1 == "เสร็จสิ้น"
+                             select x).Count();
+
+            var data = new { Get = jobcount,
+                             Post = workcount,
+                             w_do = work_do,
+                            finish = work_finish };
+
+            return Ok(data);
+
         }
     }
 }
