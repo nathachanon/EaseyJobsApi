@@ -78,19 +78,18 @@ namespace EasyJobsApi.Controllers
         [HttpGet]
         public IQueryable<object> GetAllWork()
         {
-            var query = from c in db.Work select c;
-            //var work = db.Work.Select(s => new WorkDto
-            //{
-            //    work_id = s.work_id,
-            //    work_name = s.work_name,
-            //    work_desc = s.work_desc,
-            //    labor_cost = s.labor_cost,
-            //    duration = s.duration,
-            //    member_id = s.member_id,
-            //    location_id = s.location_id,
-            //    status_id = s.status_id
-            //});
-            return query;
+            var work = db.Work.Select(s => new WorkDto
+            {
+                work_id = s.work_id,
+                work_name = s.work_name,
+                work_desc = s.work_desc,
+                labor_cost = s.labor_cost,
+                duration = s.duration,
+                member_id = s.member_id,
+                location_id = s.location_id,
+                status_id = s.status_id
+            });
+            return work;
         }
 
         [Route("api/GetWorkDetail")]
@@ -181,30 +180,59 @@ namespace EasyJobsApi.Controllers
 
         }
 
-        [Route("api/allWork_blank")] //งานทั้งหมดที่ว่าง
-        [HttpGet]
-        public IHttpActionResult GetAllWork_blank()
+        [Route("api/allWork_blank")] //งานทั้งหมดที่ว่าง //รับ member_id ถ้าไม่มี จะโชวทั้งหมดที่ว่าง
+        [HttpPost]
+        public IHttpActionResult GetAllWork_blank([FromBody] MemberOnlyDto req)
         {
-            var work_blank = (from x in db.Work
-                              join y in db.Status on x.status_id equals y.status_id
-                              join z in db.Location on x.location_id equals z.location_id
-                              where y.status1 == "ว่าง"
-                              select new
-                              {
-                                  work_id = x.work_id,
-                                  member_id = x.member_id,
-                                  work_name = x.work_name,
-                                  work_desc = x.work_desc,
-                                  tel = x.tel,
-                                  labor_cost = x.labor_cost,
-                                  duration = x.duration,
-                                  datetime = x.datetime,
-                                  status = y.status1,
-                                  lat = z.lat,
-                                  @long = z.@long,
-                                  loc_name = z.loc_name
-                              });
-            return Ok(work_blank);
+            var mw = JsonConvert.SerializeObject(req);
+            MemberOnlyDto wr = JsonConvert.DeserializeObject<MemberOnlyDto>(mw);
+
+            if(wr.member_id == null)
+            {
+                var work_blank = (from x in db.Work
+                                  join y in db.Status on x.status_id equals y.status_id
+                                  join z in db.Location on x.location_id equals z.location_id
+                                  where y.status1 == "ว่าง"
+                                  select new
+                                  {
+                                      work_id = x.work_id,
+                                      member_id = x.member_id,
+                                      work_name = x.work_name,
+                                      work_desc = x.work_desc,
+                                      tel = x.tel,
+                                      labor_cost = x.labor_cost,
+                                      duration = x.duration,
+                                      datetime = x.datetime,
+                                      status = y.status1,
+                                      lat = z.lat,
+                                      @long = z.@long,
+                                      loc_name = z.loc_name
+                                  });
+                return Ok(work_blank);
+            }
+            else
+            {
+                var work_blank = (from x in db.Work
+                                  join y in db.Status on x.status_id equals y.status_id
+                                  join z in db.Location on x.location_id equals z.location_id
+                                  where y.status1 == "ว่าง" && x.member_id != wr.member_id
+                                  select new
+                                  {
+                                      work_id = x.work_id,
+                                      member_id = x.member_id,
+                                      work_name = x.work_name,
+                                      work_desc = x.work_desc,
+                                      tel = x.tel,
+                                      labor_cost = x.labor_cost,
+                                      duration = x.duration,
+                                      datetime = x.datetime,
+                                      status = y.status1,
+                                      lat = z.lat,
+                                      @long = z.@long,
+                                      loc_name = z.loc_name
+                                  });
+                return Ok(work_blank);
+            }
         }
 
         [Route("api/work_post")] //งานที่เราโพส

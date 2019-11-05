@@ -139,13 +139,23 @@ namespace EasyJobsApi.Controllers
             var Login = db.Member.FirstOrDefault(a => a.email == M.email);
             if (Login != null && Crypto.VerifyHashedPassword(Login.password, M.password) == true)
             {
-                return Ok(Login);
+                var member_info = from x in db.Member
+                                  where x.email == M.email
+                                  select new
+                                  {
+                                      member_id = x.member_id,
+                                      name = x.name,
+                                      surname = x.surname,
+                                      tel = x.tel
+                                  };
+
+                return Ok(member_info);
             }
             else
             {
-                 return StatusCode(HttpStatusCode.NoContent);
+                return StatusCode(HttpStatusCode.NoContent);
             }
-           
+
         }
 
         [Route("api/Member/Upload")]
