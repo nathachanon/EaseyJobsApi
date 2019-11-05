@@ -527,12 +527,15 @@ namespace EasyJobsApi.Controllers
             return Ok(work_blank);
         }
 
+
         [Route("api/job_count")] // 
         [HttpPost]
         public IHttpActionResult jobcount([FromBody] MemberOnlyDto req)
+
         {
             var mw = JsonConvert.SerializeObject(req);
             MemberOnlyDto wr = JsonConvert.DeserializeObject<MemberOnlyDto>(mw);
+
 
             var jobcount = (from x in db.Getjob
                             where x.member_id == wr.member_id
@@ -568,6 +571,7 @@ namespace EasyJobsApi.Controllers
                             finish = work_finish };
 
             return Ok(data);
+
 
         }
     }
