@@ -242,21 +242,21 @@ namespace EasyJobsApi.Controllers
             var mw = JsonConvert.SerializeObject(req);
             MemberOnlyDto wr = JsonConvert.DeserializeObject<MemberOnlyDto>(mw);
 
-            var work_post = (from x in db.Work
-                             join z in db.Status on x.status_id equals z.status_id
-                             where x.member_id == wr.member_id
-                             select new 
-                             {
-                                 work_id = x.work_id,
-                                 work_name = x.work_name,
-                                 work_desc = x.work_desc,
-                                 labor_cost = x.labor_cost,
-                                 duration = x.duration,
-                                 member_id = x.member_id,
-                                 location_id = x.location_id,
-                                 status = z.status1,
-                                 
-                             });
+            var work_post = (from c in db.Work
+                      join s in db.Status on c.status_id equals s.status_id
+                      join d in db.Getjob on c.work_id equals d.work_id into d2
+                      from f in d2.DefaultIfEmpty()
+                      select new
+                      {
+                          work_id = c.work_id,
+                          work_name = c.work_name,
+                          work_desc = c.work_desc,
+                          labor_cost = c.labor_cost,
+                          duration = c.duration,
+                          location_id = c.location_id,
+                          status = s.status1,
+                          member_id = (f.member_id == null ? Guid.Empty : f.member_id)
+                      });
 
             return Ok(work_post);
         }
