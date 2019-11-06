@@ -193,24 +193,24 @@ namespace EasyJobsApi.Controllers
         {
             var member = JsonConvert.SerializeObject(req);
             editMember M = JsonConvert.DeserializeObject<editMember>(member);
+         
+                var status_update = (from x in db.Member
+                                     where x.member_id == M.member_id
+                                     select new
+                                     {
+                                         my_member = x
+                                     });
 
-            var status_update = (from x in db.Member      
-                                 where x.member_id == M.member_id
-                                 select new
-                                 {
-                                     my_member = x
-                                 });
+                foreach (var st in status_update)
+                {
+                    st.my_member.name = M.name;
+                    st.my_member.surname = M.surname;
+                    st.my_member.tel = M.tel;
 
-            foreach (var st in status_update)
-            {
-                st.my_member.name = M.name;
-                st.my_member.surname = M.surname;
-                st.my_member.email = M.email;
-                st.my_member.tel = M.tel;
-
-            }
-            db.SaveChangesAsync();
-            return Ok("Edit succes");
+                }
+                db.SaveChangesAsync();
+                return Ok("Edit succes");
+            
         }
     }
 }
