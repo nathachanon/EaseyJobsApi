@@ -246,6 +246,8 @@ namespace EasyJobsApi.Controllers
                       join s in db.Status on c.status_id equals s.status_id
                       join d in db.Getjob on c.work_id equals d.work_id into d2
                       from f in d2.DefaultIfEmpty()
+                      where wr.member_id == c.member_id
+                      orderby c.datetime descending
                       select new
                       {
                           work_id = c.work_id,
@@ -272,7 +274,7 @@ namespace EasyJobsApi.Controllers
             var work_blank = (from x in db.Work
                               join y in db.Log on x.work_id equals y.work_id
                               join z in db.Status on x.status_id equals z.status_id
-                              where y.member_id == wr.member_id && x.work_id == y.work_id
+                              where y.member_id == wr.member_id && x.work_id == y.work_id && x.member_id != wr.member_id
                               
                               select new 
                               {
@@ -538,7 +540,7 @@ namespace EasyJobsApi.Controllers
             var work_blank = (from x in db.Work
                               join y in db.Status on x.status_id equals y.status_id
                               join z in db.Location on x.location_id equals z.location_id
-                              where y.status1 == "ว่าง" && x.work_name.Contains(wr.name)
+                              where y.status1 == "ว่าง" && x.work_name.Contains(wr.name) && wr.member_id != x.member_id
                               select new
                               {
                                   work_id = x.work_id,
